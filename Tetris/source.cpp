@@ -32,6 +32,10 @@ int main()
 	Sprite SpriteBlock(TextBlock);
 	SpriteBlock.setTextureRect(IntRect(0,0,18,18));
 
+	int dx = 0;
+	bool rotate=0;
+	int colorNum = 1;
+
 	while (window.isOpen())
 	{
 		Event e;
@@ -41,13 +45,49 @@ int main()
 			{
 				window.close();
 			}
+			if (e.type == Event::KeyPressed)
+			{
+				if (e.key.code == Keyboard::Up)
+				{
+					rotate = true;
+				}
+				else if (e.key.code == Keyboard::Left)
+				{
+					dx = -1;
+				}
+				else if (e.key.code == Keyboard::Right)
+				{
+					dx = 1;
+				}
+			}
 		}
-		int num = 4;
 		for (int i = 0; i < 4; i++)
 		{
-			a[i].x = figures[num][i] % 2;
-			a[i].y = figures[num][i] / 2;
+			a[i].x += dx;
+		}
 
+		if (rotate)
+		{
+			Point p = a[1];
+			for (int i = 0; i < 4; i++)
+			{
+				int x = a[i].y - p.y;
+				int y = a[i].x - p.x;
+				a[i].x = p.x - x;
+				a[i].y = p.y + y;
+			} 
+		}
+
+		int num = 3;
+		if (a[0].x == 0)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				a[i].x = figures[num][i] % 2;
+				a[i].y = figures[num][i] / 2;
+			}
+			dx = 0;
+			rotate = 0;
 		}
 		window.clear(Color::White);
 		for (int i = 0; i < 4; i++)
