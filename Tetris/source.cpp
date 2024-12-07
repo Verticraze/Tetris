@@ -22,9 +22,20 @@ int figures[7][4] =
 	3,5,7,6,
 	2,3,4,5,
 };
+
+bool check()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (a[i].x<0 || a[i].x>N || a[i].y >= M)return 0;
+		else if (field[a[i].y][a[i].x])return 0;
+	}
+	return 1;
+}
 int main()
 {
-	RenderWindow window(VideoMode(480, 240), "Tetris");
+	srand(time(0));
+	RenderWindow window(VideoMode(480, 720), "Tetris");
 
 	Texture TextBlock;
 	TextBlock.loadFromFile("images/tiles.png");
@@ -35,35 +46,46 @@ int main()
 	int dx = 0;
 	bool rotate=0;
 	int colorNum = 1;
+	float timer = 0;
+	float delay = 0.3;
 
-	while (window.isOpen())
+	Clock clock;
+
+	while (window.isOpen())	
 	{
+		float time = clock.getElapsedTime().asSeconds();
+		clock.restart();
+		timer += time;
+
+		
 		Event e;
 		while (window.pollEvent(e))
 		{
-			if (e.type = Event::Closed)
-			{
+			if (e.type == Event::Closed)
+			
 				window.close();
-			}
+			
 			if (e.type == Event::KeyPressed)
-			{
+			
 				if (e.key.code == Keyboard::Up)
 				{
 					rotate = true;
 				}
-				else if (e.key.code == Keyboard::Left)
-				{
-					dx = -1;
-				}
-				else if (e.key.code == Keyboard::Right)
-				{
-					dx = 1;
-				}
-			}
+				else if (e.key.code == Keyboard::Left) dx = -1;
+				else if (e.key.code == Keyboard::Right) dx = 1;
 		}
+		
 		for (int i = 0; i < 4; i++)
 		{
+			b[i] = a[i];
 			a[i].x += dx;
+		}
+		if (!check())
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				a[i] = b[i];
+			}
 		}
 
 		if (rotate)
@@ -76,20 +98,57 @@ int main()
 				a[i].x = p.x - x;
 				a[i].y = p.y + y;
 			} 
+			if (!check())
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					a[i] = b[i];
+				}
+			}
+
 		}
 
-		int num = 3;
-		if (a[0].x == 0)
+		if (timer > delay)
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				a[i].x = figures[num][i] % 2;
-				a[i].y = figures[num][i] / 2;
+				b[i] = a[i];
+				a[i].y += 1;
+				if (!check())
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						field[b[i].y][b[i].x] = colorNum;
+					}
+					colorNum = 1 + rand() % 7;
+					int num = rand() % 7;
+					for (int i = 0; i < 4; i++)
+					{
+						a[i].x = figures[num][i] % 2;
+						a[i].y = figures[num][i] / 2;
+					}
+
+				}
 			}
-			dx = 0;
-			rotate = 0;
+			timer = 0;
 		}
+		 
+		dx = 0; rotate = 0;
+		
 		window.clear(Color::White);
+		for (int i = 0; i < M; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				if (field[i][j] == 0)
+				{
+					continue;
+				}
+				SpriteBlock.setPosition(j*18, i*18);
+				window.draw(SpriteBlock);
+
+			}
+		}
 		for (int i = 0; i < 4; i++)
 		{
 			SpriteBlock.setPosition(a[i].x*18,a[i].y*18);
@@ -100,3 +159,4 @@ int main()
 	}
 	return 0;
 }
+
