@@ -137,8 +137,8 @@ int main()
 					int num = rand() % 7;
 					for (int i = 0; i < 4; i++)
 					{
-						a[i] = figures[num][i] % 2;
-						a[i] = figures[num][i] / 2;
+						a[i].x = figures[num][i] % 2;
+						a[i].y = figures[num][i] / 2;
 					}
 				}
 			}
