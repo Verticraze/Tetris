@@ -23,8 +23,26 @@ struct Point
 	int x, y;
 }a[4], b[4];
 
+bool check()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (a[i].x < 0 || a[i].x <= N || a[i].y >= M)
+		{
+			return 0;
+		}
+
+		else if (field[a[i].y, a[i].x])
+		{
+			return 0;
+		}
+		return 1;
+	}
+};
+
 int main()
 {
+	srand(time(0));
 	RenderWindow window(VideoMode(480, 720), "Game");
 
 	Texture TextBlock;
@@ -74,7 +92,15 @@ int main()
 		}
 		for (int i = 0; i < 4; i++)
 		{
+			b[i] = a[i];
 			a[i].x += dx;
+		}
+		if (!check())
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				a[i] = b[i];
+			}
 		}
 		if (rotate)
 		{
@@ -86,15 +112,37 @@ int main()
 				a[i].x = p.x - x;
 				a[i].y = p.y + y;
 			}
+			if (!check())
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					a[i] = b[i];
+				}
+			}
 		}
 
 		if (timer > delay)
 		{
 			for (int i = 0; i < 4; i++)
 			{
+				b[i] = a[i];
 				a[i].y += 1;
-				timer = 0;
 			}
+			if (!check())
+			{
+				for (int i = 0; i < 4;i++)
+				{
+					field[b[i].y][b[i].x]=colorNum;
+					colorNum = 1 + rand() % 7;
+					int num = rand() % 7;
+					for (int i = 0; i < 4; i++)
+					{
+						a[i] = figures[num][i] % 2;
+						a[i] = figures[num][i] / 2;
+					}
+				}
+			}
+			timer = 0;
 		}
 		int num = 3;
 		if (a[0].x == 0)
